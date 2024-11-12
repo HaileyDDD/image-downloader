@@ -25,5 +25,6 @@
   "web_accessible_resources": [
     "image_processor.html",
     "image_processor.js"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-inline'; object-src 'self'"
 }

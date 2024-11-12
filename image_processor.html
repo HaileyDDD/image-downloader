@@ -28,19 +28,38 @@
         .file-upload-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 25px;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            background-color: #f0f8ff;
+            transition: all 0.3s ease;
+        }
+        .file-upload-container:hover {
+            border-color: #2980b9;
+            background-color: #e6f2ff;
         }
         .file-upload-btn {
-            display: inline-block;
-            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
             background-color: #3498db;
             color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .file-upload-btn:hover {
             background-color: #2980b9;
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .file-upload-btn::before {
+            content: '📤'; /* 上传图标 */
+            margin-right: 10px;
+            font-size: 24px;
         }
         #imageUpload {
             display: none;
@@ -113,15 +132,69 @@
         #downloadAll:hover {
             background-color: #27ae60;
         }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            transition: background-color 0.3s;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .content-panel {
+            display: none;
+        }
+        .content-panel.active {
+            display: block;
+        }
+        .upload-guide {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>图片处理器</h1>
-        <div class="file-upload-container">
-            <input type="file" id="imageUpload" accept="image/*" multiple>
-            <label for="imageUpload" class="file-upload-btn">选择本地图片</label>
+        
+        <!-- 选项卡导航 -->
+        <div class="tab-container">
+            <div class="tab active" data-tab="plugin-images">插件获取图片</div>
+            <div class="tab" data-tab="local-upload">本地上传图片</div>
         </div>
+
+        <!-- 插件获取图片面板 -->
+        <div id="plugin-images" class="content-panel active">
+            <p class="upload-guide">这里是通过插件获取的网页图片</p>
+            <div class="file-upload-container" style="display: none;">
+                <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
+                <label for="imageUpload" class="file-upload-btn" style="display: none;">
+                    上传本地图片
+                </label>
+            </div>
+        </div>
+
+        <!-- 本地上传图片面板 -->
+        <div id="local-upload" class="content-panel">
+            <p class="upload-guide">在这里上传你的本地图片</p>
+            <div class="file-upload-container">
+                <input type="file" id="localImageUpload" accept="image/*" multiple style="display:none;">
+                <label for="localImageUpload" class="file-upload-btn">
+                    上传本地图片
+                </label>
+            </div>
+        </div>
+
         <div class="size-controls">
             <div class="size-row">
                 <div class="size-input">
@@ -148,6 +221,9 @@
         <div class="image-container" id="imageContainer"></div>
         <button id="downloadAll">下载选中图片</button>
     </div>
+
+    <script src="image_processor_tabs.js"></script>
     <script src="image_processor.js"></script>
+    <script src="image_processor_init.js"></script>
 </body>
 </html>
