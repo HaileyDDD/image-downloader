@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>图片下载器</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 10px;
+      padding-bottom: 100px;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      text-align: center;
+      color: #333;
+    }
+    #globalSelectAll {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #globalSelectAll:hover {
+      background-color: #45a049;
+    }
+    .size-group {
+      margin-bottom: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px;
+    }
+    .size-group h2 {
+      font-size: 16px;
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #333;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .image-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f9f9f9;
+      border-radius: 5px;
+      padding: 8px;
+      transition: transform 0.2s;
+    }
+    .image-item:hover {
+      transform: scale(1.05);
+    }
+    .image-item img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 5px;
+      border-radius: 4px;
+    }
+    .size-select-all {
+      margin-right: 5px;
+    }
+    #floatingButtonContainer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 10px;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+    }
+    #downloadOriginalBtn, #downloadBtn {
+      width: 48%;
+      padding: 10px;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #downloadOriginalBtn {
+      background-color: #4CAF50;
+    }
+    #downloadOriginalBtn:hover {
+      background-color: #45a049;
+    }
+    #downloadBtn {
+      background-color: #008CBA;
+    }
+    #downloadBtn:hover {
+      background-color: #007B9E;
+    }
+  </style>
+</head>
+<body>
+  <h1>选择要下载的图片</h1>
+  <button id="globalSelectAll">全选所有图片</button>
+  <div id="imageSizeGroups"></div>
+  <div id="floatingButtonContainer">
+    <button id="downloadOriginalBtn">下载原图</button>
+    <button id="downloadBtn">调整大小</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

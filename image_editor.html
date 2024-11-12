@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片编辑器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        #editor-tools {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #editor-canvas {
+            border: 1px solid #ddd;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图片编辑器</h1>
+        <div id="editor-tools">
+            <button id="crop">裁剪</button>
+            <button id="rotate">旋转</button>
+            <button id="flip-x">水平翻转</button>
+            <button id="flip-y">垂直翻转</button>
+            <button id="draw">画笔</button>
+            <button id="text">添加文字</button>
+            <button id="save">保存</button>
+            <button id="cancel">取消</button>
+        </div>
+        <canvas id="editor-canvas"></canvas>
+    </div>
+    <script src="image_editor.js"></script>
+</body>
+</html>

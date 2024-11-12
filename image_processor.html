@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片处理器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+        .file-upload-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .file-upload-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .file-upload-btn:hover {
+            background-color: #2980b9;
+        }
+        #imageUpload {
+            display: none;
+        }
+        .size-controls {
+            margin-bottom: 25px;
+        }
+        .size-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+        }
+        .size-input {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .size-input label {
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+        .size-input input {
+            flex-grow: 1;
+        }
+        .pixel-info {
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+        .image-item {
+            width: calc(25% - 20px);
+            text-align: center;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .image-item:hover {
+            transform: scale(1.03);
+        }
+        .image-item canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        #downloadAll {
+            display: block;
+            width: 200px;
+            margin: 25px auto 0;
+            padding: 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #downloadAll:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图片处理器</h1>
+        <div class="file-upload-container">
+            <input type="file" id="imageUpload" accept="image/*" multiple>
+            <label for="imageUpload" class="file-upload-btn">选择本地图片</label>
+        </div>
+        <div class="size-controls">
+            <div class="size-row">
+                <div class="size-input">
+                    <label for="canvasWidth">画布宽度：</label>
+                    <input type="number" id="canvasWidth" value="800" min="100" max="2000">
+                </div>
+                <div class="size-input">
+                    <label for="imageWidth">像素宽度：</label>
+                    <input type="number" id="imageWidth" value="800" min="100" max="2000">
+                </div>
+                <div class="size-input">
+                    <label for="canvasHeight">画布高度：</label>
+                    <input type="number" id="canvasHeight" value="800" min="100" max="2000">
+                </div>
+                <div class="size-input">
+                    <label for="imageHeight">像素高度：</label>
+                    <input type="number" id="imageHeight" value="800" min="100" max="2000">
+                </div>
+            </div>
+        </div>
+        <p class="pixel-info">
+            默认更改图片大小是800*800，适用于tiktok、temu等平台，其他尺寸在上方进行调整
+        </p>
+        <div class="image-container" id="imageContainer"></div>
+        <button id="downloadAll">下载选中图片</button>
+    </div>
+    <script src="image_processor.js"></script>
+</body>
+</html>
