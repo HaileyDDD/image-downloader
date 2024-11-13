@@ -1,8 +1,22 @@
 {
-  "appName": {
-    "message": "Image Downloader"
+  "extensionName": {
+    "message": "Image Downloader Pro",
+    "description": "Name of the Chrome extension"
   },
-  "appDescription": {
-    "message": "Download and resize web images"
+  "extensionDescription": {
+    "message": "Powerful image downloading and processing tool for web content",
+    "description": "Description of the Chrome extension"
+  },
+  "popupTitle": {
+    "message": "Select Images to Download",
+    "description": "Title of the popup window"
+  },
+  "processorTitle": {
+    "message": "Image Processor",
+    "description": "Title of the image processing page"
+  },
+  "purchaseTitle": {
+    "message": "Purchase Download Quota",
+    "description": "Title of the purchase page"
   }
 }

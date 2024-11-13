@@ -54,34 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 添加联动逻辑
-    const canvasWidth = document.getElementById('canvasWidth');
-    const canvasHeight = document.getElementById('canvasHeight');
-    const imageWidth = document.getElementById('imageWidth');
-    const imageHeight = document.getElementById('imageHeight');
-
-    // 画布宽度变化时，同步像素宽度
-    canvasWidth.addEventListener('input', () => {
-        imageWidth.value = canvasWidth.value;
-        applyImageSize();
-    });
-
-    // 画布高度变化时，同步像素高度
-    canvasHeight.addEventListener('input', () => {
-        imageHeight.value = canvasHeight.value;
-        applyImageSize();
-    });
-
-    // 像素宽度变化时，同步画布宽度
-    imageWidth.addEventListener('input', () => {
-        canvasWidth.value = imageWidth.value;
-        applyImageSize();
-    });
-
-    // 像素高度变化时，同步画布高度
-    imageHeight.addEventListener('input', () => {
-        canvasHeight.value = imageHeight.value;
-        applyImageSize();
-    });
+    setupSizeLinking();
 
     // 添加本地文件上传事件监听器
     const localImageUpload = document.getElementById('localImageUpload');
@@ -486,4 +459,79 @@ function stopDrawing() {
         // 如果取消，恢复原图
         ctx.putImageData(originalImage, 0, 0);
     }
+}
+
+function setupSizeLinking() {
+    const canvasWidth = document.getElementById('canvasWidth');
+    const canvasHeight = document.getElementById('canvasHeight');
+    const imageWidth = document.getElementById('imageWidth');
+    const imageHeight = document.getElementById('imageHeight');
+    const sizeLinkCheckbox = document.getElementById('sizeLinkCheckbox');
+
+    let aspectRatio = 1;
+
+    function updateAspectRatio() {
+        aspectRatio = canvasWidth.value / canvasHeight.value;
+    }
+
+    function syncDimensions(source, target, isWidth) {
+        if (!sizeLinkCheckbox.checked) return;
+
+        if (isWidth) {
+            target.value = Math.round(source.value / aspectRatio);
+        } else {
+            target.value = Math.round(source.value * aspectRatio);
+        }
+    }
+
+    function syncCanvasAndImageDimensions() {
+        if (!sizeLinkCheckbox.checked) return;
+
+        imageWidth.value = canvasWidth.value;
+        imageHeight.value = canvasHeight.value;
+    }
+
+    // 添加事件监听器
+    [canvasWidth, canvasHeight, imageWidth, imageHeight].forEach(input => {
+        input.addEventListener('input', () => {
+            updateAspectRatio();
+            
+            switch(input) {
+                case canvasWidth:
+                    syncDimensions(canvasWidth, canvasHeight, true);
+                    syncCanvasAndImageDimensions();
+                    break;
+                case canvasHeight:
+                    syncDimensions(canvasHeight, canvasWidth, false);
+                    syncCanvasAndImageDimensions();
+                    break;
+                case imageWidth:
+                    if (sizeLinkCheckbox.checked) {
+                        syncDimensions(imageWidth, imageHeight, true);
+                        canvasWidth.value = imageWidth.value;
+                        canvasHeight.value = imageHeight.value;
+                    }
+                    break;
+                case imageHeight:
+                    if (sizeLinkCheckbox.checked) {
+                        syncDimensions(imageHeight, imageWidth, false);
+                        canvasWidth.value = imageWidth.value;
+                        canvasHeight.value = imageHeight.value;
+                    }
+                    break;
+            }
+
+            applyImageSize();
+        });
+    });
+
+    // 复选框变化事件
+    sizeLinkCheckbox.addEventListener('change', () => {
+        if (sizeLinkCheckbox.checked) {
+            // 重新同步尺寸
+            updateAspectRatio();
+            syncCanvasAndImageDimensions();
+            applyImageSize();
+        }
+    });
 }

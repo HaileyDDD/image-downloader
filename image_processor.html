@@ -196,18 +196,24 @@
         </div>
 
         <div class="size-controls">
+            <div class="size-link-container">
+                <input type="checkbox" id="sizeLinkCheckbox" checked>
+                <label for="sizeLinkCheckbox">同步画布和像素大小</label>
+            </div>
             <div class="size-row">
                 <div class="size-input">
                     <label for="canvasWidth">画布宽度：</label>
                     <input type="number" id="canvasWidth" value="800" min="100" max="2000">
                 </div>
                 <div class="size-input">
-                    <label for="imageWidth">像素宽度：</label>
-                    <input type="number" id="imageWidth" value="800" min="100" max="2000">
-                </div>
-                <div class="size-input">
                     <label for="canvasHeight">画布高度：</label>
                     <input type="number" id="canvasHeight" value="800" min="100" max="2000">
+                </div>
+            </div>
+            <div class="size-row">
+                <div class="size-input">
+                    <label for="imageWidth">像素宽度：</label>
+                    <input type="number" id="imageWidth" value="800" min="100" max="2000">
                 </div>
                 <div class="size-input">
                     <label for="imageHeight">像素高度：</label>
