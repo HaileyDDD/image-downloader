@@ -31,9 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 初始化尺寸输入框的事件监听器
+    const debouncedApplyImageSize = debounce(() => {
+        applyImageSize();
+    }, 300);
+
     ['canvasWidth', 'canvasHeight', 'imageWidth', 'imageHeight'].forEach(id => {
         const input = document.getElementById(id);
-        input.addEventListener('input', debounce(applyImageSize, 300));
+        input.addEventListener('input', debouncedApplyImageSize);
     });
 
     const downloadButton = document.getElementById('downloadAll');
@@ -63,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function displayPluginImages() {
+async function displayPluginImages() {
     const imageContainer = document.getElementById('imageContainer');
     imageContainer.innerHTML = '';
 
@@ -77,6 +81,9 @@ function displayPluginImages() {
         return;
     }
 
+    const canvasWidth = parseInt(document.getElementById('canvasWidth').value) || 800;
+    const canvasHeight = parseInt(document.getElementById('canvasHeight').value) || 800;
+
     // 只显示插件获取的图片，排除本地上传的图片
     const pluginImages = images.filter(img => !localUploadImages.includes(img));
     
@@ -88,54 +95,150 @@ function displayPluginImages() {
         imageContainer.appendChild(noImagesMessage);
         return;
     }
-    
-    pluginImages.forEach((img, index) => {
-        const canvas = createCanvasFromImage(img);
-        const imgItem = createImageItem(canvas, index, 'plugin');
-        imageContainer.appendChild(imgItem);
-    });
+
+    try {
+        const canvasPromises = pluginImages.map((img, index) => 
+            createCanvasFromImage(img, canvasWidth, canvasHeight)
+        );
+
+        const canvases = await Promise.all(canvasPromises);
+        canvases.forEach((canvas, index) => {
+            const imgItem = createImageItem(canvas, index, 'plugin');
+            imageContainer.appendChild(imgItem);
+        });
+    } catch (error) {
+        console.error('Error displaying images:', error);
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = '显示图片时出错，请重试';
+        errorMessage.style.color = 'red';
+        errorMessage.style.textAlign = 'center';
+        imageContainer.appendChild(errorMessage);
+    }
 }
 
-function displayLocalUploadImages() {
+async function displayLocalUploadImages() {
     const imageContainer = document.getElementById('imageContainer');
     imageContainer.innerHTML = '';
 
-    localUploadImages.forEach((img, index) => {
-        const canvas = createCanvasFromImage(img);
-        const imgItem = createLocalUploadImageItem(canvas, index);
-        imageContainer.appendChild(imgItem);
-    });
+    const canvasWidth = parseInt(document.getElementById('canvasWidth').value) || 800;
+    const canvasHeight = parseInt(document.getElementById('canvasHeight').value) || 800;
+
+    const canvasPromises = localUploadImages.map((img, index) => 
+        createCanvasFromImage(img, canvasWidth, canvasHeight)
+    );
+
+    try {
+        const canvases = await Promise.all(canvasPromises);
+        canvases.forEach((canvas, index) => {
+            const imgItem = createLocalUploadImageItem(canvas, index);
+            imageContainer.appendChild(imgItem);
+        });
+    } catch (error) {
+        console.error('Error displaying images:', error);
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = '显示图片时出错，请重试';
+        errorMessage.style.color = 'red';
+        errorMessage.style.textAlign = 'center';
+        imageContainer.appendChild(errorMessage);
+    }
 }
 
 function createCanvasFromImage(img, canvasWidth = 800, canvasHeight = 800) {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    const ctx = canvas.getContext('2d');
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        // 设置画布尺寸
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        const ctx = canvas.getContext('2d');
 
-    const imgElement = new Image();
-    imgElement.onload = () => {
-        // 填充白色背景
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        const imgElement = new Image();
+        imgElement.onload = () => {
+            // 填充白色背景
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-        // 计算缩放比例
-        const scaleX = canvasWidth / imgElement.width;
-        const scaleY = canvasHeight / imgElement.height;
-        const scale = Math.min(scaleX, scaleY);
+            // 获取目标像素尺寸
+            const targetWidth = parseInt(document.getElementById('imageWidth').value) || imgElement.width;
+            const targetHeight = parseInt(document.getElementById('imageHeight').value) || imgElement.height;
 
-        // 计算居中位置
-        const scaledWidth = imgElement.width * scale;
-        const scaledHeight = imgElement.height * scale;
-        const x = (canvasWidth - scaledWidth) / 2;
-        const y = (canvasHeight - scaledHeight) / 2;
+            // 计算缩放比例（基于像素尺寸）
+            const scaleX = targetWidth / imgElement.width;
+            const scaleY = targetHeight / imgElement.height;
+            const scale = Math.min(scaleX, scaleY);
 
-        // 在白色背景上绘制调整大小后的图像
-        ctx.drawImage(imgElement, 0, 0, imgElement.width, imgElement.height, x, y, scaledWidth, scaledHeight);
+            // 计算实际绘制尺寸
+            const scaledWidth = imgElement.width * scale;
+            const scaledHeight = imgElement.height * scale;
+
+            // 计算在画布上的居中位置
+            const x = (canvasWidth - scaledWidth) / 2;
+            const y = (canvasHeight - scaledHeight) / 2;
+
+            // 在白色背景上绘制调整大小后的图像
+            ctx.drawImage(imgElement, 0, 0, imgElement.width, imgElement.height, x, y, scaledWidth, scaledHeight);
+            resolve(canvas);
+        };
+
+        imgElement.onerror = () => {
+            console.error('图片加载失败');
+            // 创建一个错误提示的画布
+            ctx.fillStyle = '#ffebee';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            ctx.fillStyle = '#f44336';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('图片加载失败', canvasWidth/2, canvasHeight/2);
+            resolve(canvas);
+        };
+
+        imgElement.src = img.src;
+    });
+}
+
+function setupSizeLinking() {
+    const canvasWidth = document.getElementById('canvasWidth');
+    const canvasHeight = document.getElementById('canvasHeight');
+    const imageWidth = document.getElementById('imageWidth');
+    const imageHeight = document.getElementById('imageHeight');
+    let aspectRatio = 1;
+
+    // 初始化比例
+    const updateAspectRatio = () => {
+        if (imageWidth.value && imageHeight.value) {
+            aspectRatio = imageWidth.value / imageHeight.value;
+        }
     };
-    imgElement.src = img.src;
 
-    return canvas;
+    // 更新图片尺寸，保持宽高比
+    const updateImageSize = (isWidth) => {
+        if (!imageWidth.value || !imageHeight.value) return;
+        
+        if (isWidth) {
+            const width = parseInt(imageWidth.value);
+            if (!isNaN(width)) {
+                imageHeight.value = Math.round(width / aspectRatio);
+            }
+        } else {
+            const height = parseInt(imageHeight.value);
+            if (!isNaN(height)) {
+                imageWidth.value = Math.round(height * aspectRatio);
+            }
+        }
+    };
+
+    // 监听输入变化
+    imageWidth.addEventListener('input', () => {
+        updateImageSize(true);
+        applyImageSize();
+    });
+
+    imageHeight.addEventListener('input', () => {
+        updateImageSize(false);
+        applyImageSize();
+    });
+
+    // 初始化时设置比例
+    updateAspectRatio();
 }
 
 function handleLocalUploadImageUpload(event) {
@@ -295,46 +398,12 @@ function displayImages() {
 }
 
 function applyImageSize() {
-    const canvasWidth = parseInt(document.getElementById('canvasWidth').value);
-    const canvasHeight = parseInt(document.getElementById('canvasHeight').value);
-    const imageWidth = parseInt(document.getElementById('imageWidth').value);
-    const imageHeight = parseInt(document.getElementById('imageHeight').value);
-
-    const imageContainer = document.getElementById('imageContainer');
-    imageContainer.innerHTML = '';
-
-    images.forEach((img, index) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-        const ctx = canvas.getContext('2d');
-
-        const imgElement = new Image();
-        imgElement.onload = () => {
-            // 填充白色背景
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            // 计算缩放比例
-            const scaleX = imageWidth / imgElement.width;
-            const scaleY = imageHeight / imgElement.height;
-            const scale = Math.min(scaleX, scaleY);
-
-            // 计算居中位置
-            const scaledWidth = imgElement.width * scale;
-            const scaledHeight = imgElement.height * scale;
-            const x = (canvasWidth - scaledWidth) / 2;
-            const y = (canvasHeight - scaledHeight) / 2;
-
-            // 在白色背景上绘制调整大小后的图像
-            ctx.drawImage(imgElement, 0, 0, imgElement.width, imgElement.height, x, y, scaledWidth, scaledHeight);
-
-            // 更新显示
-            const imgItem = createImageItem(canvas, index);
-            imageContainer.appendChild(imgItem);
-        };
-        imgElement.src = img.src;
-    });
+    const activeTab = document.querySelector('.tab.active').dataset.tab;
+    if (activeTab === 'plugin-images') {
+        displayPluginImages();
+    } else if (activeTab === 'local-upload') {
+        displayLocalUploadImages();
+    }
 }
 
 function createImageItem(canvas, index) {
